@@ -1,0 +1,16 @@
+1) 
+
+a) 
+Consistency - It is important that researchers understand the population and test the sample for consistency before going ahead with the survey. 
+
+Diversity -  to be truly representative of the population, a sample must be as diverse as the population itself and sensitive to the local differences that are unavoidable as we move across the population.
+
+Transparency - maintain transparency about the procedures followed while selecting the sample so that the results of the survey are seen with the right perspective.
+
+b) 
+
+Sampling Error - sampling error is the error caused by observing a sample instead of the whole population. The sampling error is the difference between a sample statistic used to estimate a population parameter and the actual but unknown value of the parameter.
+
+Sampling bias - sampling bias is a bias in which a sample is collected in such a way that some members of the intended population are less likely to be included than others.
+
+c) 

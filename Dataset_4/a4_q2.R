@@ -1,0 +1,137 @@
+setwd("/home/pruthvi/Desktop/Sem5/Data Analytics/Assignments/4th")
+
+dataset <- read.csv("/home/pruthvi/Desktop/Sem5/Data Analytics/Assignments/4th/tips_tailored.csv",TRUE,",")
+
+library(dplyr)
+library(plotly)
+library(mice)
+#library(caret)
+
+confmat <- function(actual,preds,pos,neg){
+  tp <-0
+  fn <- 0
+  fp <-0
+  tn <-0
+  
+  for(i in 1:length(actual)){
+    if(actual[i]==pos && preds[i]==pos)
+      tp <- tp +1
+    else if(actual[i]==pos && preds[i]==neg)
+      fn <- fn +1
+    else if(actual[i]==neg && preds[i]==pos)
+      fp <- fp +1
+    else if(actual[i]==neg && preds[i]==neg)
+      tn <- tn +1
+  }  
+  #print(tp)
+  #print(fn)
+  #print(fp)
+  #print(tn)
+  row_names <- c(pos,neg)
+  col_names <- c(pos,neg)
+  k <- matrix(c(tp,fn,fp,tn),nrow=2,ncol=2,byrow=TRUE)
+  dimnames(k) <- list(row_names, col_names)
+  k
+}
+
+
+calc_param <-function(k){
+  accuracy <- ((k[1,1]+k[2,2])/(k[1,1]+k[1,2]+k[2,1]+k[2,2]))
+  precision <- k[1,1]/(k[1,1]+k[2,1])
+  recall <- k[1,1]/(k[1,1]+k[1,2])
+  misscl_rate <- 1-accuracy
+  f1 <- (2*recall*precision)/(recall+precision)
+  fb2 <- (1+2*2)*(recall*precision)/(2*2*precision+recall)
+  fb0_5 <- (1+0.5*0.5)*(recall*precision)/(0.5*0.5*precision+recall)
+  
+  m <- c(accuracy,precision,recall,misscl_rate,f1,fb2,fb0_5)
+  m
+  
+}
+
+
+actual <- dataset$Result
+preds <- dataset$Predicted.Results
+
+
+#confusionMatrix(preds,actual)
+
+k <- confmat(actual,preds,levels(actual)[2],levels(actual)[1])
+print(k)
+params <- calc_param(k)
+
+print("Accuracy")
+print(params[1])
+
+print("Precision")
+print(params[2])
+
+print("Recall")
+print(params[3])
+
+print("Misclassification Rate")
+print(params[4])
+
+print("F1-score")
+print(params[5])
+
+print("F score with β=2")
+print(params[6])
+
+print("F score with β=1/2")
+print(params[7])
+
+
+#b)
+
+dataset$Predictions1 <- rep("Lose",each = length(actual))
+actual <- dataset$Result
+new_preds <- factor(dataset$Predictions1)
+#levels(new_preds) <- c("Lose","Win")
+#confusionMatrix(new_preds,actual)
+l <- confmat(actual,new_preds,levels(actual)[2],levels(actual)[1])
+print(l)
+new_params <- calc_param(l)
+
+print("Accuracy")
+print(new_params[1])
+
+print("Precision")
+print(new_params[2])
+
+print("Recall")
+print(new_params[3])
+
+print("Misclassification Rate")
+print(new_params[4])
+
+#Indications : The accuracies are very close and just by predicting 'Lose' which occurs
+#		the most is giving an accuracy close to the previous model. This means 
+#		we should not just look at accuracy but consider other scores as well
+
+
+#c)
+
+#When we use accuracy, we assign equal cost to false positives and 
+#false negatives. When that data set is imbalanced - say it has 99% of 
+#instances in one class and only 1 % in the other - there is a great way 
+#to lower the cost. Predict that every instance belongs to the majority 
+#class we get accuracy of 99% . There is an issue if cost of incurring false positive is
+#greater that cost of incurring false negative or vice versa . So it is good to use 
+#other measures depending on the dataset.
+
+#Accuracy = It is the proportion of correct classifications among all classifications.
+#Precision = It is the ratio of number of wins predicted correctly to number of wins 
+#              predicted in total.That is how correct is our prediction of wins.
+#Recall = It is the ratio of number of wins predicted correctly to the number of wins in 
+#         reality. That is  the fraction of relevant instances that have been 
+#          retrieved over the total amount of relevant instances.
+
+
+#Misclassification Rate = It is the proportion of incorrect classifications among 
+#                         all classifications.
+
+#F-score = measures the effectiveness of retrieval with respect to a user who 
+#		attaches β times as much importance to recall as precision.
+#		F-score beong the harmonic mean of precision and recall is better
+#		than arithemetic and geometric means as we are dealing with ratios
